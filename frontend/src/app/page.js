@@ -15,10 +15,10 @@ export default function Home() {
           height="315"
           src="https://www.youtube.com/embed/5TJebt_lUmk?si=rKN9MBinL9OlY2VC"
           title="YouTube video player"
-          frameborder="0"
+          frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
           className="rounded-3xl"
         ></iframe>
       </div>
