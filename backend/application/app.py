@@ -56,6 +56,22 @@ def create_app():
 
     app.register_blueprint(student_route)
 
+    from application.routes.create import create_route
+
+    app.register_blueprint(create_route)
+
+    from application.routes.section import section_route
+
+    app.register_blueprint(section_route)
+
+    from application.routes.group import group_route
+
+    app.register_blueprint(group_route)
+
+    from application.routes.message import message_route
+
+    app.register_blueprint(message_route)
+
     app.app_context().push()
     createdb()
     return app

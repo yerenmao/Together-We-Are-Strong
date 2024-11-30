@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from datetime import datetime, timezone
+from sqlalchemy.dialects.postgresql import JSONB
 import uuid
 
 from application.app import db
@@ -40,7 +40,9 @@ class Course(db.Model):
     id = db.Column(db.String(31), primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     credits = db.Column(db.Integer, nullable=False)
-    type = db.Column(db.Enum("必修", "選修", name="course_type"), nullable=False)
+    type = db.Column(
+        db.Enum("必修", "選修", "必帶", name="course_type"), nullable=False
+    )
 
     department_id = db.Column(
         db.String(4), db.ForeignKey("department.id"), nullable=False
@@ -55,7 +57,7 @@ class Section(db.Model):
     __tablename__ = "section"
     id = db.Column(db.String(31), primary_key=True)
     semester = db.Column(db.String(15), nullable=False)
-    time = db.Column(db.JSON, nullable=False)
+    time = db.Column(JSONB, nullable=False)
     classroom = db.Column(db.String(255))
     max_students = db.Column(db.Integer)
 
@@ -63,6 +65,9 @@ class Section(db.Model):
     getCourse = db.relationship("Course", backref="getSection")
     professor_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
     getProfessor = db.relationship("User", backref="getSection")
+
+    def __repr__(self):
+        return f"<Section: {self.id}, {self.semester}, {self.time}, {self.classroom}, {self.max_students}, {self.course_id}, {self.professor_id} />"
 
 
 class Syllabus(db.Model):
@@ -75,13 +80,14 @@ class Syllabus(db.Model):
     office_hours = db.Column(db.Text)
     textbook = db.Column(db.Text)
     reference = db.Column(db.Text)
-    grading_policy = db.Column(db.Text)
-    uploaded_at = db.Column(db.DateTime, nullable=False)
 
     professor_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
     getProfessor = db.relationship("User", backref="getSyllabus")
     section_id = db.Column(db.String(31), db.ForeignKey("section.id"), nullable=False)
     getSection = db.relationship("Section", backref="getSyllabus")
+
+    def __repr__(self):
+        return f"<Syllabus: {self.id}, {self.overview}, {self.objective}, {self.requirement}, {self.expected_weekly_study_hours}, {self.office_hours}, {self.textbook}, {self.reference}, {self.professor_id}, {self.section_id} />"
 
 
 class SectionOutline(db.Model):
@@ -93,6 +99,9 @@ class SectionOutline(db.Model):
 
     __table_args__ = (db.PrimaryKeyConstraint("id", "week"),)
 
+    def __repr__(self):
+        return f"<SectionOutline: {self.id}, {self.week}, {self.date}, {self.lecture_or_event} />"
+
 
 class SelectSection(db.Model):
     __tablename__ = "select_section"
@@ -100,10 +109,13 @@ class SelectSection(db.Model):
     section_id = db.Column(db.String(31), db.ForeignKey("section.id"), nullable=False)
     preference_order = db.Column(db.Integer, nullable=False)
 
-    getStudent = db.relationship("User", back_populates="getSelectSection")
-    getSection = db.relationship("Section", back_populates="getSelectSection")
+    getStudent = db.relationship("User")  # , backref="getSelectSection")
+    getSection = db.relationship("Section")  # , backref="getSelectSection")
 
     __table_args__ = (db.PrimaryKeyConstraint("student_id", "section_id"),)
+
+    def __repr__(self):
+        return f"<SelectSection: {self.student_id}, {self.section_id}, {self.preference_order} />"
 
 
 class IsTA(db.Model):
@@ -111,8 +123,8 @@ class IsTA(db.Model):
     student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
     section_id = db.Column(db.String(31), db.ForeignKey("section.id"), nullable=False)
 
-    getStudent = db.relationship("User", back_populates="getIsTA")
-    getSection = db.relationship("Section", back_populates="getIsTA")
+    getStudent = db.relationship("User", backref="getIsTA")
+    getSection = db.relationship("Section", backref="getIsTA")
 
     __table_args__ = (db.PrimaryKeyConstraint("student_id", "section_id"),)
 
@@ -124,7 +136,12 @@ class Group(db.Model):
     created_at = db.Column(db.DateTime, nullable=False)
 
     student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
-    getStudent = db.relationship("User", back_populates="getGroup")
+    getStudent = db.relationship("User", backref="getGroup")
+
+    def __repr__(self):
+        return (
+            f"<Group: {self.id}, {self.name}, {self.created_at}, {self.student_id} />"
+        )
 
 
 class JoinGroup(db.Model):
@@ -132,13 +149,16 @@ class JoinGroup(db.Model):
     joined_at = db.Column(db.DateTime, nullable=False)
 
     student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
-    getStudent = db.relationship("User", back_populates="getJoinGroup")
+    getStudent = db.relationship("User", backref="getJoinGroup")
     group_id = db.Column(
         db.UUID(as_uuid=True), db.ForeignKey("group.id"), nullable=False
     )
-    getGroup = db.relationship("Group", back_populates="getJoinGroup")
+    getGroup = db.relationship("Group", backref="getJoinGroup")
 
     __table_args__ = (db.PrimaryKeyConstraint("student_id", "group_id"),)
+
+    def __repr__(self):
+        return f"<JoinGroup: {self.student_id}, {self.group_id}, {self.joined_at} />"
 
 
 class Message(db.Model):
@@ -148,20 +168,23 @@ class Message(db.Model):
     sent_at = db.Column(db.DateTime, nullable=False)
 
     student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
-    getStudent = db.relationship("User", back_populates="getMessage")
+    getStudent = db.relationship("User", backref="getMessage")
     group_id = db.Column(
         db.UUID(as_uuid=True), db.ForeignKey("group.id"), nullable=False
     )
-    getGroup = db.relationship("Group", back_populates="getMessage")
+    getGroup = db.relationship("Group", backref="getMessage")
+
+    def __repr__(self):
+        return f"<Message: {self.id}, {self.message}, {self.student_id}, {self.group_id}, {self.sent_at} />"
 
 
 class LikeMessage(db.Model):
     __tablename__ = "like_message"
     like = db.Column(db.Boolean, nullable=False)
     student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
-    getStudent = db.relationship("User", back_populates="getLikeMessage")
+    getStudent = db.relationship("User", backref="getLikeMessage")
     message_id = db.Column(db.Integer, db.ForeignKey("message.id"), nullable=False)
-    getMessage = db.relationship("Message", back_populates="getLikeMessage")
+    getMessage = db.relationship("Message", backref="getLikeMessage")
 
     __table_args__ = (db.PrimaryKeyConstraint("student_id", "message_id"),)
 
@@ -173,13 +196,13 @@ class Event(db.Model):
     proposed_at = db.Column(db.DateTime, nullable=False)
 
     student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
-    getStudent = db.relationship("User", back_populates="getEvent")
+    getStudent = db.relationship("User", backref="getEvent")
     group_id = db.Column(
         db.UUID(as_uuid=True), db.ForeignKey("group.id"), nullable=False
     )
-    getGroup = db.relationship("Group", back_populates="getEvent")
+    getGroup = db.relationship("Group", backref="getEvent")
     section_id = db.Column(db.String(31), db.ForeignKey("section.id"), nullable=False)
-    getSection = db.relationship("Section", back_populates="getEvent")
+    getSection = db.relationship("Section", backref="getEvent")
 
 
 class ParticipateEvent(db.Model):
@@ -187,8 +210,8 @@ class ParticipateEvent(db.Model):
     participate = db.Column(db.Boolean, nullable=False)
 
     student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
-    getStudent = db.relationship("User", back_populates="getParticipateEvent")
+    getStudent = db.relationship("User", backref="getParticipateEvent")
     section_id = db.Column(db.String(31), db.ForeignKey("section.id"), nullable=False)
-    getSection = db.relationship("Section", back_populates="getParticipateEvent")
+    getSection = db.relationship("Section", backref="getParticipateEvent")
 
     __table_args__ = (db.PrimaryKeyConstraint("student_id", "section_id"),)
