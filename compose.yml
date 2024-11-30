@@ -1,16 +1,16 @@
 services:
   # nextjs service
-  # next-frontend:
-  #   container_name: next
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: next.dockerfile
-  #   ports:
-  #     - 3000:3000
-  #   environment:
-  #     - NEXT_PUBLIC_API_URL=http://localhost:8080
-  #   depends_on:
-  #     - flask-backend
+  next-frontend:
+    container_name: next
+    build:
+      context: ./frontend
+      dockerfile: next.dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+    depends_on:
+      - flask-backend
 
   # flask service
   flask-backend:
