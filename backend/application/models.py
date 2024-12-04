@@ -55,7 +55,8 @@ class Course(db.Model):
 
 class Section(db.Model):
     __tablename__ = "section"
-    id = db.Column(db.String(31), primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    section_id = db.Column(db.String(31), nullable=False)
     semester = db.Column(db.String(15), nullable=False)
     time = db.Column(JSONB, nullable=False)
     classroom = db.Column(db.String(255))
@@ -83,7 +84,7 @@ class Syllabus(db.Model):
 
     professor_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
     getProfessor = db.relationship("User", backref="getSyllabus")
-    section_id = db.Column(db.String(31), db.ForeignKey("section.id"), nullable=False)
+    section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
     getSection = db.relationship("Section", backref="getSyllabus")
 
     def __repr__(self):
@@ -106,7 +107,7 @@ class SectionOutline(db.Model):
 class SelectSection(db.Model):
     __tablename__ = "select_section"
     student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
-    section_id = db.Column(db.String(31), db.ForeignKey("section.id"), nullable=False)
+    section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
     preference_order = db.Column(db.Integer, nullable=False)
 
     getStudent = db.relationship("User")  # , backref="getSelectSection")
@@ -121,7 +122,7 @@ class SelectSection(db.Model):
 class IsTA(db.Model):
     __tablename__ = "is_ta"
     student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
-    section_id = db.Column(db.String(31), db.ForeignKey("section.id"), nullable=False)
+    section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
 
     getStudent = db.relationship("User", backref="getIsTA")
     getSection = db.relationship("Section", backref="getIsTA")
@@ -201,7 +202,7 @@ class Event(db.Model):
         db.UUID(as_uuid=True), db.ForeignKey("group.id"), nullable=False
     )
     getGroup = db.relationship("Group", backref="getEvent")
-    section_id = db.Column(db.String(31), db.ForeignKey("section.id"), nullable=False)
+    section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
     getSection = db.relationship("Section", backref="getEvent")
 
 
@@ -211,7 +212,7 @@ class ParticipateEvent(db.Model):
 
     student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
     getStudent = db.relationship("User", backref="getParticipateEvent")
-    section_id = db.Column(db.String(31), db.ForeignKey("section.id"), nullable=False)
+    section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
     getSection = db.relationship("Section", backref="getParticipateEvent")
 
     __table_args__ = (db.PrimaryKeyConstraint("student_id", "section_id"),)
