@@ -1,4 +1,4 @@
-from flask import jsonify, Blueprint
+from flask import jsonify, Blueprint, request
 
 from application.app import bcrypt
 from application.app import db
@@ -8,6 +8,33 @@ from application.models import Course
 from application.models import Section
 
 create_route = Blueprint("create", __name__, url_prefix="/api/create")
+
+@create_route.route("/bulkuser", methods=["POST"])
+def create_student():
+    try:
+        data = request.get_json()
+        for user in data["bulk"]:
+            hashed = bcrypt.generate_password_hash(user["passwd"]).decode("utf-8")
+            new_user = User(
+                id=user["id"],
+                name=r'{}'.format(user["name"]),
+                email=user["email"],
+                passwd=hashed,
+                role=user["role"],
+                department_id=user["department_id"]
+            )
+            db.session.add(new_user)
+        db.session.commit()
+        return jsonify({
+            "message": "Success",
+            # "name": r'{}'.format(prof["name"]),
+            # "passwd": prof["passwd"],
+            # "hashed": bcrypt.generate_password_hash(prof["passwd"]).decode("utf-8")
+        }), 200
+    except Exception as e: 
+        return jsonify({"message": e}), 200
+
+
 
 
 @create_route.route("/user", methods=["POST"])
@@ -333,7 +360,7 @@ def create_section():
             course = Course.query.filter(Course.id == section["course_id"]).first()
             professor = User.query.filter(User.id == section["professor_id"]).first()
             newsection = Section(
-                id=section["id"],
+                section_id=section["id"],
                 semester=section["semester"],
                 time=section["time"],
                 max_students=section["max_students"],
