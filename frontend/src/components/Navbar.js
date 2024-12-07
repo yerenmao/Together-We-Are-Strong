@@ -20,9 +20,20 @@ function Options({ role }) {
     );
   } else if (role === "prof") {
     return (
-      <Link href="/prof" className="hover:text-gray-300">
+      <Link href="/professor" className="hover:text-gray-300 mx-10">
         課程
       </Link>
+    );
+  } else if (role === "admin") {
+    return (
+      <>
+        <Link href="/admin" className="hover:text-gray-300 mx-10">
+          課程
+        </Link>
+        <Link href="/admin/course/open" className="hover:text-gray-300 mx-10">
+          開設課程
+        </Link>
+      </>
     );
   } else {
     return <></>;

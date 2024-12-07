@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import Client from "@/utils/Client";
+import { useState, useEffect } from "react";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 
 import ChatRoomPreview from "./ChatRoomPreview";
 
@@ -61,8 +62,9 @@ function ChatRoomNav({ params }) {
   );
 }
 
-export default function ChatRoom({ path }) {
+export default function ChatRoom({ params }) {
   const [groups, setGroups] = useState([]);
+  const pathname = usePathname();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +78,7 @@ export default function ChatRoom({ path }) {
       }
     };
     fetchData();
-  }, []);
+  }, [pathname]);
   return (
     <>
       <div className="relative flex flex-col h-full w-full">
@@ -85,34 +87,9 @@ export default function ChatRoom({ path }) {
         {/* 聊天室預覽 */}
         <div className="overflow-auto basis-[93.5%]">
           {groups.map((group, index) => (
-            <ChatRoomPreview
-              key={index}
-              index={index}
-              path={path}
-              group={group}
-            />
+            <ChatRoomPreview key={index} index={index} group={group} />
           ))}
-          {/* <ChatRoomPreview /> */}
-          {/* <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-          <ChatRoomPreview /> */}
         </div>
-        {/* <div className="overflow-scroll w-full basis-[93.5%] flex flex-col bg-blue-200">
-          <ChatRoomPreview />
-          <ChatRoomPreview />
-        </div> */}
       </div>
     </>
   );

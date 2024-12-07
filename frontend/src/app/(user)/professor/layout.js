@@ -7,13 +7,9 @@ import Navbar from "@/components/Navbar";
 
 export default function ProfLayout({ children }) {
   return (
-    <html lang="en">
-      <body>
-        <div className="bg-gray-200 min-h-screen">
-          <Navbar />
-          {children}
-        </div>
-      </body>
-    </html>
+    <div className="bg-gray-200 min-h-screen">
+      <Navbar />
+      {children}
+    </div>
   );
 }

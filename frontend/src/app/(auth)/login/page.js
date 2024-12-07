@@ -20,6 +20,8 @@ export default function Login() {
         router.push("/student");
       } else if (response.data.role === "prof") {
         router.push("/professor");
+      } else if (response.data.role === "admin") {
+        router.push("/admin");
       }
     } catch (err) {
       setError(err.response.data.error);

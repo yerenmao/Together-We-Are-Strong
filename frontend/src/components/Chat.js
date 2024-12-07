@@ -1,19 +1,12 @@
 "use client";
 
-import EventMessage from "./EventMessage";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import Client from "@/utils/Client";
+import { usePathname } from "next/navigation";
+import Message from "./Message";
 
-import Smile from "./Smile";
-import HeadSvg from "./HeadSvg";
-
-function formatTimeStamp(timestamp) {
-  const date = new Date(timestamp);
-  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-function ChatNav({ groupName, groupStudents }) {
+function ChatNav({ groupName, groupStudents, path }) {
   return (
     <nav className="flex h-14 border-b-gray-400 bg-gray-200 border-b justify-between">
       <div className="flex items-center self-center ml-4 font-medium">
@@ -27,7 +20,7 @@ function ChatNav({ groupName, groupStudents }) {
       </div>
 
       <Link
-        href="/propose"
+        href={`/group/${path}/propose`}
         className="relative group inline-block h-10 w-10 mt-2 mr-6"
       >
         <button className="hover:bg-gray-400 rounded-full h-full w-full items-center self-center ">
@@ -53,54 +46,12 @@ function ChatNav({ groupName, groupStudents }) {
   );
 }
 
-function Message({ message, showIcon = true }) {
-  const justify = message.is_mine ? "justify-end" : "justify-start";
-  const visibility = showIcon ? "visible" : "invisible";
-  const margin = showIcon ? "mt-2" : "";
-  return (
-    <div className={`flex items-center ${justify} ${margin}`}>
-      {message.is_mine ? (
-        <div className="flex flex-col items-center self-end">
-          <Smile />
-          <div className="text-xs text-gray-500">
-            {formatTimeStamp(message.sent_at)}
-          </div>
-        </div>
-      ) : (
-        <div
-          className={`${visibility} self-start mt-2 flex flex-col items-center`}
-        >
-          <HeadSvg showIcon={showIcon} />
-          <div className="text-xs text-gray-500">{message.student}</div>
-        </div>
-      )}
-      <div className="max-w-[75%] lg:max-w-[65%] bg-gray-300 text-sm rounded-xl py-2 px-3 m-1">
-        {message.message}
-      </div>
-      {message.is_mine ? (
-        <div
-          className={`${visibility} self-start mt-2 flex flex-col items-center`}
-        >
-          <HeadSvg showIcon={showIcon} />
-          <div className="text-xs text-gray-500">{message.student}</div>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center self-end">
-          <Smile />
-          <div className="text-xs text-gray-500">
-            {formatTimeStamp(message.sent_at)}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function Chat({ path }) {
   const [groupName, setGroupName] = useState("");
   const [groupStudents, setGroupStudents] = useState([]);
   const [message, setMessage] = useState("");
   const [history, setHistory] = useState([]);
+  const pathname = usePathname();
 
   const chatContainerRef = useRef(null);
 
@@ -133,7 +84,7 @@ export default function Chat({ path }) {
 
   useEffect(() => {
     fetchHistory();
-  }, []);
+  }, [usePathname]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -149,6 +100,7 @@ export default function Chat({ path }) {
         message: message,
         path: path,
       });
+      setMessage("");
       fetchHistory();
     } catch (err) {
       console.log(err);
@@ -157,25 +109,28 @@ export default function Chat({ path }) {
   return (
     <>
       <div className="w-full h-full flex flex-col border-l border-l-gray-400 relative">
-        <ChatNav groupName={groupName} groupStudents={groupStudents} />
+        <ChatNav
+          groupName={groupName}
+          groupStudents={groupStudents}
+          path={path}
+        />
         <div
           ref={chatContainerRef}
           className="overflow-y-scroll basis-[85.5%] pt-1 pb-1"
         >
-          {/* <Message isMine={false} showIcon={true} />
-          <Message isMine={false} />
-          <Message isMine={true} showIcon={true} />
-          <Message isMine={true} /> */}
-          {/* <EventMessage /> */}
           {history.map((msg, index) => {
-            console.log(msg, typeof msg);
             const showIcon =
               index === 0 ||
               msg.student !== history[index - 1].student ||
               new Date(msg.sent_at) - new Date(history[index - 1].sent_at) >=
                 60000;
             return (
-              <Message key={index} message={msg} showIcon={showIcon} />
+              <Message
+                key={index}
+                path={path}
+                message={msg}
+                showIcon={showIcon}
+              />
               // <div
               //   key={msg.sent_at}
               //   className={`message ${isMine ? "mine" : "other"}`}
