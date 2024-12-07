@@ -1,7 +1,12 @@
-import Link from "next/link";
+"use client";
 
-export default function ChatRoomPreview({ path, group }) {
-  const background = path === group.path ? `bg-gray-300` : "";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+export default function ChatRoomPreview({ group }) {
+  const pathname = usePathname();
+  const background = pathname.includes(group.path) ? `bg-gray-300` : "";
+
   return (
     <>
       <Link

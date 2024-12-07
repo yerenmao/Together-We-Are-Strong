@@ -1,7 +1,7 @@
 "use client";
 
 import SearchBoard from "@/components/SearchBoard";
-import SearchResult from "@/components/SearchResult";
+import Section from "@/components/Section";
 import Client from "@/utils/Client";
 
 import { useState } from "react";
@@ -95,7 +95,7 @@ export default function Student() {
         <div className="w-full bg-gray-200 p-20">
           <div className="flex flex-col w-full h-full items-center">
             {sections.map((section, index) => (
-              <SearchResult key={index} index={index} section={section} />
+              <Section key={index} index={index} section={section} />
             ))}
             {/* <SyllabusComponent /> */}
           </div>
