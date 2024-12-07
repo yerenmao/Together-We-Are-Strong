@@ -179,17 +179,6 @@ class Message(db.Model):
         return f"<Message: {self.id}, {self.message}, {self.student_id}, {self.group_id}, {self.sent_at} />"
 
 
-class LikeMessage(db.Model):
-    __tablename__ = "like_message"
-    like = db.Column(db.Boolean, nullable=False)
-    student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
-    getStudent = db.relationship("User", backref="getLikeMessage")
-    message_id = db.Column(db.Integer, db.ForeignKey("message.id"), nullable=False)
-    getMessage = db.relationship("Message", backref="getLikeMessage")
-
-    __table_args__ = (db.PrimaryKeyConstraint("student_id", "message_id"),)
-
-
 class Event(db.Model):
     __tablename__ = "event"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -205,6 +194,9 @@ class Event(db.Model):
     section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
     getSection = db.relationship("Section", backref="getEvent")
 
+    def __repr__(self):
+        return f"<Event: {self.id}, {self.name}, {self.proposed_at}, {self.student_id}, {self.group_id}, {self.section_id} />"
+
 
 class ParticipateEvent(db.Model):
     __tablename__ = "participate_event"
@@ -212,7 +204,8 @@ class ParticipateEvent(db.Model):
 
     student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
     getStudent = db.relationship("User", backref="getParticipateEvent")
-    section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
-    getSection = db.relationship("Section", backref="getParticipateEvent")
+    event_id = db.Column(db.Integer, db.ForeignKey("event.id"), nullable=False)
+    getEvent = db.relationship("Event", backref="getParticipateEvent")
 
-    __table_args__ = (db.PrimaryKeyConstraint("student_id", "section_id"),)
+    __table_args__ = (db.PrimaryKeyConstraint("student_id", "event_id"),)
+

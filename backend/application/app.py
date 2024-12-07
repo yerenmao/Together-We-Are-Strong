@@ -72,6 +72,14 @@ def create_app():
 
     app.register_blueprint(message_route)
 
+    from application.routes.event import event_route
+
+    app.register_blueprint(event_route)
+
+    from application.routes.course import course_route
+
+    app.register_blueprint(course_route)
+
     app.app_context().push()
     createdb()
     return app
