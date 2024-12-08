@@ -16,7 +16,7 @@ while not connected:
         cursor = conn.cursor()
         connected = True
     except Exception as e:
-        pass  # print(f"ERROR: {e}")
+        print(f"ERROR: {e}")
 
 time.sleep(2)
 
