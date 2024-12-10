@@ -51,7 +51,6 @@ export default function Chat({ path }) {
   const [groupStudents, setGroupStudents] = useState([]);
   const [message, setMessage] = useState("");
   const [history, setHistory] = useState([]);
-  const pathname = usePathname();
 
   const chatContainerRef = useRef(null);
 
@@ -61,11 +60,17 @@ export default function Chat({ path }) {
         `http://localhost:8080/api/message/${path}`
       );
       setHistory(response.data.data);
-      console.log(response.data);
     } catch (err) {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchHistory();
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
