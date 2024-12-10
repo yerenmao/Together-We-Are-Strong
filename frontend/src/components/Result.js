@@ -19,7 +19,6 @@ export default function Result({ path, eventid }) {
           `http://localhost:8080/api/event/result/${eventid}`
         );
         const data = response.data;
-        console.log(data);
         setEvent(data.event);
         setSemester(data.semester);
         setSection(data.section);
@@ -59,7 +58,9 @@ export default function Result({ path, eventid }) {
             <div className="flex w-full h-full">
               <div className="w-1/2 flex flex-col justify-start items-center">
                 <p className="font-semibold text-lg my-2">參加</p>
-                {join.map((item) => `${item}`).join("")}
+                {join.map((item, index) => (
+                  <p key={index}>{item}</p>
+                ))}
               </div>
               <div className="w-1/2 flex flex-col justify-start items-center">
                 <p className="font-semibold text-lg my-2">不參加</p>

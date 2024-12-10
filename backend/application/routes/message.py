@@ -16,29 +16,33 @@ def list_group(path):
         messages = Message.query.filter(
             db.and_(Message.group_id == uuid2path(path))
         ).all()
-        events = Event.query.filter(
-            db.and_(Event.group_id == uuid2path(path))
-        )
+        events = Event.query.filter(db.and_(Event.group_id == uuid2path(path)))
         res = []
 
         for message in messages:
-            res.append({
-                "type": "message",
-                "message": message.message,
-                "student": message.getStudent.name,
-                "sent_at": message.sent_at,
-                "is_mine": message.student_id == current_user.id,
-            })
-            
+            res.append(
+                {
+                    "type": "message",
+                    "message": message.message,
+                    "student_id": message.getStudent.id,
+                    "student": message.getStudent.name,
+                    "sent_at": message.sent_at,
+                    "is_mine": message.student_id == current_user.id,
+                }
+            )
+
         for event in events:
-            res.append({
-                "type": "event",
-                "event_id": event.id,
-                "event_name": event.name,
-                "student": event.getStudent.name,
-                "sent_at": event.proposed_at,
-                "is_mine": event.student_id == current_user.id,
-            })
+            res.append(
+                {
+                    "type": "event",
+                    "event_id": event.id,
+                    "event_name": event.name,
+                    "student_id": message.getStudent.id,
+                    "student": event.getStudent.name,
+                    "sent_at": event.proposed_at,
+                    "is_mine": event.student_id == current_user.id,
+                }
+            )
 
         res.sort(key=lambda x: x["sent_at"])
         return jsonify({"message": "Success", "data": res}), 200

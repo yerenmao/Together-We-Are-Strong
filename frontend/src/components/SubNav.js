@@ -1,10 +1,14 @@
-import Link from "next/link";
+"use client";
 
-export default function SubNav({ backhref, closehref, title }) {
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+export default function SubNav({ closehref, title }) {
+  const router = useRouter();
   return (
     <nav className="flex h-14 w-full border-b-gray-400 bg-gray-200 border-b justify-between">
-      <Link
-        href={backhref}
+      <div
+        onClick={() => router.back()}
         className="relative group inline-block ml-3 h-10 w-10 mt-2 "
       >
         <button className="hover:bg-gray-400 rounded-full h-10 w-10 items-center self-center ">
@@ -24,9 +28,9 @@ export default function SubNav({ backhref, closehref, title }) {
           </svg>
         </button>
         <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-max bg-gray-300 text-gray-500 text-xs rounded-xl py-1 px-2 hidden group-hover:block">
-          回主頁
+          上一頁
         </div>
-      </Link>
+      </div>
       <div className="flex">
         <p className="self-center font-bold">{title}</p>
       </div>

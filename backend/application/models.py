@@ -82,8 +82,6 @@ class Syllabus(db.Model):
     textbook = db.Column(db.Text)
     reference = db.Column(db.Text)
 
-    professor_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
-    getProfessor = db.relationship("User", backref="getSyllabus")
     section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
     getSection = db.relationship("Section", backref="getSyllabus")
 
@@ -91,24 +89,10 @@ class Syllabus(db.Model):
         return f"<Syllabus: {self.id}, {self.overview}, {self.objective}, {self.requirement}, {self.expected_weekly_study_hours}, {self.office_hours}, {self.textbook}, {self.reference}, {self.professor_id}, {self.section_id} />"
 
 
-class SectionOutline(db.Model):
-    __tablename__ = "section_outline"
-    id = db.Column(db.String(31), primary_key=True, nullable=False)
-    week = db.Column(db.String(31), primary_key=True, nullable=False)
-    date = db.Column(db.Date, nullable=False)
-    lecture_or_event = db.Column(db.Text, nullable=False)
-
-    __table_args__ = (db.PrimaryKeyConstraint("id", "week"),)
-
-    def __repr__(self):
-        return f"<SectionOutline: {self.id}, {self.week}, {self.date}, {self.lecture_or_event} />"
-
-
 class SelectSection(db.Model):
     __tablename__ = "select_section"
     student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
     section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
-    preference_order = db.Column(db.Integer, nullable=False)
 
     getStudent = db.relationship("User")  # , backref="getSelectSection")
     getSection = db.relationship("Section")  # , backref="getSelectSection")
@@ -116,7 +100,7 @@ class SelectSection(db.Model):
     __table_args__ = (db.PrimaryKeyConstraint("student_id", "section_id"),)
 
     def __repr__(self):
-        return f"<SelectSection: {self.student_id}, {self.section_id}, {self.preference_order} />"
+        return f"<SelectSection: {self.student_id}, {self.section_id} />"
 
 
 class IsTA(db.Model):
@@ -208,4 +192,3 @@ class ParticipateEvent(db.Model):
     getEvent = db.relationship("Event", backref="getParticipateEvent")
 
     __table_args__ = (db.PrimaryKeyConstraint("student_id", "event_id"),)
-
