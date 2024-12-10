@@ -14,7 +14,9 @@ class User(db.Model, UserMixin):
     role = db.Column(db.Enum("admin", "student", "prof", name="role"), nullable=False)
 
     department_id = db.Column(
-        db.String(4), db.ForeignKey("department.id"), nullable=False
+        db.String(4),
+        db.ForeignKey("department.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
     )
     getDepartment = db.relationship("Department", backref="getUser")
 
@@ -45,7 +47,9 @@ class Course(db.Model):
     )
 
     department_id = db.Column(
-        db.String(4), db.ForeignKey("department.id"), nullable=False
+        db.String(4),
+        db.ForeignKey("department.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
     )
     getDepartment = db.relationship("Department", backref="getCourse")
 
@@ -62,9 +66,17 @@ class Section(db.Model):
     classroom = db.Column(db.String(255))
     max_students = db.Column(db.Integer)
 
-    course_id = db.Column(db.String(31), db.ForeignKey("course.id"), nullable=False)
+    course_id = db.Column(
+        db.String(31),
+        db.ForeignKey("course.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     getCourse = db.relationship("Course", backref="getSection")
-    professor_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
+    professor_id = db.Column(
+        db.String(9),
+        db.ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     getProfessor = db.relationship("User", backref="getSection")
 
     def __repr__(self):
@@ -82,7 +94,11 @@ class Syllabus(db.Model):
     textbook = db.Column(db.Text)
     reference = db.Column(db.Text)
 
-    section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
+    section_id = db.Column(
+        db.BigInteger,
+        db.ForeignKey("section.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     getSection = db.relationship("Section", backref="getSyllabus")
 
     def __repr__(self):
@@ -91,8 +107,16 @@ class Syllabus(db.Model):
 
 class SelectSection(db.Model):
     __tablename__ = "select_section"
-    student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
-    section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
+    student_id = db.Column(
+        db.String(9),
+        db.ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
+    section_id = db.Column(
+        db.BigInteger,
+        db.ForeignKey("section.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
 
     getStudent = db.relationship("User")  # , backref="getSelectSection")
     getSection = db.relationship("Section")  # , backref="getSelectSection")
@@ -105,8 +129,16 @@ class SelectSection(db.Model):
 
 class IsTA(db.Model):
     __tablename__ = "is_ta"
-    student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
-    section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
+    student_id = db.Column(
+        db.String(9),
+        db.ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
+    section_id = db.Column(
+        db.BigInteger,
+        db.ForeignKey("section.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
 
     getStudent = db.relationship("User", backref="getIsTA")
     getSection = db.relationship("Section", backref="getIsTA")
@@ -120,7 +152,11 @@ class Group(db.Model):
     name = db.Column(db.String(127), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
-    student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
+    student_id = db.Column(
+        db.String(9),
+        db.ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     getStudent = db.relationship("User", backref="getGroup")
 
     def __repr__(self):
@@ -133,10 +169,16 @@ class JoinGroup(db.Model):
     __tablename__ = "join_group"
     joined_at = db.Column(db.DateTime, nullable=False)
 
-    student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
+    student_id = db.Column(
+        db.String(9),
+        db.ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     getStudent = db.relationship("User", backref="getJoinGroup")
     group_id = db.Column(
-        db.UUID(as_uuid=True), db.ForeignKey("group.id"), nullable=False
+        db.UUID(as_uuid=True),
+        db.ForeignKey("group.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
     )
     getGroup = db.relationship("Group", backref="getJoinGroup")
 
@@ -152,10 +194,16 @@ class Message(db.Model):
     message = db.Column(db.Text, nullable=False)
     sent_at = db.Column(db.DateTime, nullable=False)
 
-    student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
+    student_id = db.Column(
+        db.String(9),
+        db.ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     getStudent = db.relationship("User", backref="getMessage")
     group_id = db.Column(
-        db.UUID(as_uuid=True), db.ForeignKey("group.id"), nullable=False
+        db.UUID(as_uuid=True),
+        db.ForeignKey("group.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
     )
     getGroup = db.relationship("Group", backref="getMessage")
 
@@ -169,13 +217,23 @@ class Event(db.Model):
     name = db.Column(db.String(255), nullable=False)
     proposed_at = db.Column(db.DateTime, nullable=False)
 
-    student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
+    student_id = db.Column(
+        db.String(9),
+        db.ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     getStudent = db.relationship("User", backref="getEvent")
     group_id = db.Column(
-        db.UUID(as_uuid=True), db.ForeignKey("group.id"), nullable=False
+        db.UUID(as_uuid=True),
+        db.ForeignKey("group.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
     )
     getGroup = db.relationship("Group", backref="getEvent")
-    section_id = db.Column(db.BigInteger, db.ForeignKey("section.id"), nullable=False)
+    section_id = db.Column(
+        db.BigInteger,
+        db.ForeignKey("section.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     getSection = db.relationship("Section", backref="getEvent")
 
     def __repr__(self):
@@ -186,9 +244,17 @@ class ParticipateEvent(db.Model):
     __tablename__ = "participate_event"
     participate = db.Column(db.Boolean, nullable=False)
 
-    student_id = db.Column(db.String(9), db.ForeignKey("user.id"), nullable=False)
+    student_id = db.Column(
+        db.String(9),
+        db.ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     getStudent = db.relationship("User", backref="getParticipateEvent")
-    event_id = db.Column(db.Integer, db.ForeignKey("event.id"), nullable=False)
+    event_id = db.Column(
+        db.Integer,
+        db.ForeignKey("event.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     getEvent = db.relationship("Event", backref="getParticipateEvent")
 
     __table_args__ = (db.PrimaryKeyConstraint("student_id", "event_id"),)
