@@ -65,25 +65,27 @@ export default function Chat({ path }) {
     }
   };
 
+  const fetchData = async () => {
+    try {
+      const response = await Client.get(
+        `http://localhost:8080/api/group/${path}`
+      );
+      setGroupName(response.data.name);
+      setGroupStudents(response.data.students);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchHistory();
+      fetchData();
     }, 1000);
     return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await Client.get(
-          `http://localhost:8080/api/group/${path}`
-        );
-        setGroupName(response.data.name);
-        setGroupStudents(response.data.students);
-      } catch (err) {
-        console.log(err);
-      }
-    };
     fetchData();
   }, []);
 

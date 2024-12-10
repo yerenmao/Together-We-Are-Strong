@@ -348,7 +348,9 @@ def schedule():
         data = request.get_json()
         student_id, section_id = current_user.id, data["section_id"]
         section = Section.query.filter(Section.id == section_id).first()
-        selected = SelectSection.query.filter(Section.id == section_id).all()
+        selected = SelectSection.query.filter(
+            SelectSection.section_id == section_id
+        ).all()
         if len(selected) == section.max_students:
             raise Exception("Overflow")
         selected_sections = SelectSection.query.filter(
