@@ -34,7 +34,17 @@
 docker-compose down
 ```
 
-**Notes:** `./run.sh new` 會自動執行 `crawler/main.py`，需要約 10 分多鐘。
+**Notes:** `./run.sh new` 會自動執行 `crawler/main.py`，需要約 10 分多鐘，以下為各個部分大概的執行時間：
+```txt
+Execution time for init: 2.1874 seconds
+Execution time for department: 0.0485 seconds
+Execution time for admin: 13.2256 seconds
+Execution time for professor: 618.0152 seconds
+Execution time for student: 9.4557 seconds
+Execution time for course: 1.1863 seconds
+Execution time for section: 11.6261 seconds
+Execution time for syllabus: 17.1852 seconds
+```
 
 ## 技術細節
 
