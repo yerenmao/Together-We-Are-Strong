@@ -3,12 +3,16 @@
 import Link from "next/link";
 import Client from "@/utils/Client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import SubNav from "./SubNav";
 
 export default function Voting({ path, eventid }) {
+  const [eventName, setEventName] = useState("");
+  const [courseName, setCourseName] = useState("");
+  const [semester, setSemester] = useState("");
+  const [professor, setProfessor] = useState("");
   const [join, setJoin] = useState(0); // 0 = no choise, 1 = yes, 2 = no
   const [error, setError] = useState(false);
   const router = useRouter();
@@ -24,6 +28,23 @@ export default function Voting({ path, eventid }) {
       setJoin(checked ? 2 : 0);
     }
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await Client.get(
+          `http://localhost:8080/api/event/${eventid}`
+        );
+        console.log(response.data);
+        setEventName(response.data["event_name"]);
+        setCourseName(response.data["course_name"]);
+        setSemester(response.data["semester"]);
+        setProfessor(response.data["professor"]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const participate = async (e) => {
     e.preventDefault();
@@ -55,15 +76,17 @@ export default function Voting({ path, eventid }) {
             <div className="text-2xl font-bold">
               <div className="flex justify-center text-center">
                 <div>團名：</div>
-                <div>這是團名</div>
+                <div>{eventName}</div>
               </div>
               <div className="flex justify-center text-center">
                 <div>想揪的課：</div>
-                <div>資料庫管理</div>
+                <div>
+                  {semester} {courseName}
+                </div>
               </div>
-              <div className="flex  justify-center text-center">
-                <div>學期：</div>
-                <div>113-1</div>
+              <div className="flex justify-center text-center">
+                <div>教師：</div>
+                <div>{professor}</div>
               </div>
             </div>
             <div className="flex justify-center items-center space-x-5 w-full ">

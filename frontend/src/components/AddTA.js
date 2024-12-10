@@ -12,7 +12,20 @@ export default function AddTA({ sectionid }) {
   const [doubleCheck, setDoubleCheck] = useState(false);
   const [taId, setTaId] = useState("");
   const [taName, setTaName] = useState("");
+  const [role, setRole] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await Client.get("http://localhost:8080/api/profile");
+        setRole(response.data["role"]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const getName = async (e) => {
@@ -45,7 +58,6 @@ export default function AddTA({ sectionid }) {
       response.data.message === "Success" ||
       response.data.message === "Already Exist"
     ) {
-      alert(response.data.message);
       router.push("/professor");
     }
     try {
@@ -56,8 +68,7 @@ export default function AddTA({ sectionid }) {
   return (
     <div className="w-full h-screen flex flex-col items-center border-l border-l-gray-400 relative space-y-16">
       <SubNav
-        backhref={"/professor"}
-        closehref={"/professor"}
+        closehref={role === "prof" ? "/professor" : "admin/section"}
         title={"指定課程助教"}
       />
       <div className="flex space-x-1 text-2xl font-bold">
@@ -117,12 +128,12 @@ export default function AddTA({ sectionid }) {
         )}
 
         <div className="flex space-x-3">
-          <Link
-            href="/professor"
+          <button
+            onClick={() => router.back()}
             className="inline-flex w-24 justify-center gap-x-1.5 rounded-3xl px-3 py-2 text-sm font-semibold  bg-gray-700 hover:bg-gray-600 text-white "
           >
             取消
-          </Link>
+          </button>
           <button
             onClick={!doubleCheck ? checkTA : addTA}
             className="inline-flex w-24 justify-center gap-x-1.5 rounded-3xl px-3 py-2 text-sm font-semibold  bg-gray-700 hover:bg-gray-600 text-white "

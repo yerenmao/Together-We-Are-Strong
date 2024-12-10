@@ -7,6 +7,8 @@ import { useState } from "react";
 import Client from "@utils/Client";
 
 export default function SearchBoard({
+  semester,
+  setSemester,
   course_name,
   setCourseName,
   section_id,
@@ -75,6 +77,13 @@ export default function SearchBoard({
           </div>
         </div>
       </div>
+      <input
+        className="placeholder:italic placeholder:text-slate-400 block bg-white w-full h-16 border border-slate-300 rounded-3xl py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 text-base"
+        placeholder="學期 (預設: 113-1)"
+        type="text"
+        value={semester}
+        onChange={(e) => setSemester(e.target.value)}
+      />
       <input
         className="placeholder:italic placeholder:text-slate-400 block bg-white w-full h-16 border border-slate-300 rounded-3xl py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 text-base"
         placeholder="課程名稱"

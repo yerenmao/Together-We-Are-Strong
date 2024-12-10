@@ -17,6 +17,7 @@ export default function CreateGroup({ params }) {
       const response = await Client.post("/api/group/create", { name });
       const path = response.data.path;
       if (response.data.message === "Success") {
+        alert(`群組代碼：${path}\n可以分享此代碼讓其他使用者加入您的群組！`);
         router.push(`/group/${path}`);
       }
     } catch (err) {

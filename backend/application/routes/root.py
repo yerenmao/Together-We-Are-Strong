@@ -18,23 +18,30 @@ def health():
     return jsonify({"message": "The server is running"})
 
 
-# @root_route.route("/register", methods=["POST"])
-# def register():
-#     # try:
-#     data = request.get_json()
-#     hashed = bcrypt.generate_password_hash(data["passwd"]).decode("utf-8")
-#     student = User(id=data["id"], name=data["name"], passwd=hashed)
-#     db.session.add(student)
-#     db.session.commit()
+@root_route.route("/register", methods=["POST"])
+def register():
+    try:
+        data = request.get_json()
+        id, name, passwd = data["id"], data["name"], data["passwd"]
+        hashed = bcrypt.generate_password_hash(passwd).decode("utf-8")
+        result = User.query.filter(User.id == id).all()
+        if len(result) == 0:
+            return (jsonify({"error": "student ID not found"})), 401
+        student = result[0]
+        student.name = name
+        student.passwd = hashed
+        db.session.commit()
 
-#     return (
-#         jsonify(
-#             {
-#                 "message": "Success",
-#             }
-#         ),
-#         201,
-#     )
+        return (
+            jsonify(
+                {
+                    "message": "Success",
+                }
+            ),
+            201,
+        )
+    except Exception as e:
+        return jsonify({"message": f"Failed: {e}"}), 500
 
 
 @root_route.route("/login", methods=["POST"])

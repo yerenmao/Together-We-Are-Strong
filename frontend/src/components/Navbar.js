@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
-function Options({ role }) {
+function Options({ role, id }) {
   if (role === "student") {
     return (
       <>
@@ -16,22 +16,42 @@ function Options({ role }) {
         <Link href="/group" className="hover:text-gray-300 mx-10">
           群組
         </Link>
+        <Link
+          href={`/student/schedule/${id}`}
+          className="hover:text-gray-300 mx-10"
+        >
+          課表
+        </Link>
       </>
     );
   } else if (role === "prof") {
     return (
-      <Link href="/professor" className="hover:text-gray-300 mx-10">
-        課程
-      </Link>
+      <>
+        <Link href="/professor" className="hover:text-gray-300 mx-10">
+          課程
+        </Link>
+        <Link href="/professor/history" className="hover:text-gray-300 mx-10">
+          歷史
+        </Link>
+      </>
     );
   } else if (role === "admin") {
     return (
       <>
         <Link href="/admin" className="hover:text-gray-300 mx-10">
+          首頁
+        </Link>
+        <Link href="/admin/course" className="hover:text-gray-300 mx-10">
           課程
+        </Link>
+        <Link href="/admin/section" className="hover:text-gray-300 mx-10">
+          節次
         </Link>
         <Link href="/admin/course/open" className="hover:text-gray-300 mx-10">
           開設課程
+        </Link>
+        <Link href="/admin/section/open" className="hover:text-gray-300 mx-10">
+          開設節次
         </Link>
       </>
     );
@@ -54,7 +74,6 @@ export default function Navbar({ params }) {
         setRole(response.data["role"]);
       } catch (error) {
         console.log(error);
-        // throw new Error("Permission Denied");
       }
     };
     fetchData();
@@ -75,7 +94,7 @@ export default function Navbar({ params }) {
       <nav className="bg-gray-900 fixed w-full z-20 top-0 start-0 h-20">
         <div className="w-full flex justify-between mx-auto mt-6">
           <div className="flex font-semibold text-lg text-slate-100 h-full justify-between pl-10">
-            <Options role={role} />
+            <Options role={role} id={id} />
           </div>
 
           <Menu as="div" className="relative inline-block text-left">
@@ -92,7 +111,7 @@ export default function Navbar({ params }) {
               <div className="py-1">
                 <MenuItem>
                   <a
-                    href="#"
+                    href={`/profile/${id}`}
                     className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                   >
                     個人檔案

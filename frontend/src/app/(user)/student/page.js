@@ -7,6 +7,7 @@ import Client from "@/utils/Client";
 import { useState } from "react";
 
 export default function Student() {
+  const [semester, setSemester] = useState("");
   const [course_name, setCourseName] = useState("");
   const [section_id, setSectionId] = useState("");
   const [department_name, setDepartmentName] = useState("");
@@ -38,6 +39,7 @@ export default function Student() {
   const [sections, setSections] = useState([]);
   const createParams = () => {
     const params = {
+      semester,
       course_name,
       section_id,
       department_name,
@@ -76,6 +78,8 @@ export default function Student() {
         <div className="w-4/5 flex flex-col justify-center items-center ">
           <div className="w-1/2 h-full flex flex-col space-y-10 items-center">
             <SearchBoard
+              semester={semester}
+              setSemester={setSemester}
               course_name={course_name}
               setCourseName={setCourseName}
               section_id={section_id}

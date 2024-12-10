@@ -48,6 +48,10 @@ def create_app():
 
     app.register_blueprint(root_route)
 
+    from application.routes.user import user_route
+
+    app.register_blueprint(user_route)
+
     # from application.routes.users import users_route
 
     # app.register_blueprint(users_route)

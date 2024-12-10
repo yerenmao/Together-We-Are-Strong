@@ -40,6 +40,7 @@ def execution_time(func):
 
 @execution_time
 def init():
+    time.sleep(1)
     connected = False
     while not connected:
         try:
@@ -159,24 +160,44 @@ def section(conn, cursor):
     with open(PROFESSOR_PKL, "rb") as f:
         prof_df = pickle.load(f)
 
+    chr2num = {"A": 11, "B": 12, "C": 13, "D": 14}
+
+    def process_number(number_str):
+        if number_str == "10":
+            return [10]
+        else:
+            return [int(digit) for digit in number_str]
+
     def parse_time(time_str):
-        chr2num = {"A": 10, "B": 11, "C": 12}
+
         if not time_str:
             return {}
         result = {}
         current_key = None
+        current_number = ""
+
         for part in time_str:
             # 如果是中文字符，作為 key
             if "\u4e00" <= part <= "\u9fff":
+                if current_number:
+                    result[current_key].extend(process_number(current_number))
+                    current_number = ""
                 current_key = part
                 if current_key not in result:
                     result[current_key] = []
             # 如果是數字，直接加入當前 key 的值
             elif part.isdigit():
-                result[current_key].append(int(part))
+                current_number += part
+                # result[current_key].append(int(part))
             # 如果是 A, B, C，轉換後加入當前 key 的值
             elif part in chr2num:
+                if current_number:
+                    result[current_key].extend(process_number(current_number))
+                    current_number = ""
                 result[current_key].append(chr2num[part])
+        if current_number:
+            result[current_key].extend(process_number(current_number))
+
         return result
 
     merged_df = pd.merge(
@@ -251,7 +272,6 @@ def syllabus(conn, cursor):
         "Office Hours",
         "指定閱讀",
         "參考書目",
-        "id",
         "ID",
     ]
     final_df = merged_df[selected_columns]
@@ -259,8 +279,8 @@ def syllabus(conn, cursor):
 
     for r in result_tuples:
         insert_query = """
-            INSERT INTO "syllabus" ("overview", "objective", "requirement", "expected_weekly_study_hours", "office_hours", "textbook", "reference", "professor_id", "section_id")
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO "syllabus" ("overview", "objective", "requirement", "expected_weekly_study_hours", "office_hours", "textbook", "reference", "section_id")
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor.execute(insert_query, r)
     conn.commit()
