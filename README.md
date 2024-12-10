@@ -10,7 +10,7 @@
 
 「Together we are strong」讓選課不再是單純的選課，而是創造一個能讓學生和朋友一起學習、共同修課的選課系統！
 
-:link: **[展示影片連結](https://youtu.be/)**
+:link: **[展示影片連結]([https://youtu.be/](https://youtu.be/HeTcHs37qjo))**
 
 ## Prerequisite
 
