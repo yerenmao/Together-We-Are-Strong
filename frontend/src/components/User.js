@@ -61,8 +61,8 @@ export default function User({ id }) {
       <div className="w-1/2 h-4/6 bg-white border-2 border-black rounded-lg text-xl font-semibold p-6">
         <div className="w-full h-1/4 text-3xl flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <HeadSvg size={20} />
-            <div>{user.name}</div>
+            {/* <HeadSvg size={20} /> */}
+            <div className="pl-2 text-nowrap">{user.name}</div>
           </div>
           <div className="text-gray-500 text-xl border-2 p-3 px-10 rounded-full">
             {role2str(user.role)}
