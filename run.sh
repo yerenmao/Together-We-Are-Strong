@@ -2,14 +2,17 @@
 
 new=$1
 
+mkdir -p data/postgres-database
 if [[ "$new" = "new" ]]; then
     rm -rf data/postgres-database/*
     echo "removed previous database"
 fi
 
-docker-compose down
-docker-compose build
-docker-compose up -d
+if [[ -e "data/postgres-database" ]]; then
+    docker-compose down
+    docker-compose build
+    docker-compose up -d
+fi
 
 if [[ "$new" = "new" ]]; then
     path="crawler/pickle/"
